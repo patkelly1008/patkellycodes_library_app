@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% extends "website_app/nav_only.html" %}
+    {% block body_block %}  
+    {% load static %}
+<html>
+    <head>
+        <title>patkellycodes | Library Inventory App</title>
+    </head>
+
+    <div class="container-xl" style="background-color: #FFFFFF;">
+        <div class="container-fluid text-black"  style="line-height: 2.5em; margin-top: 2.5em; margin-bottom: 2.5em; padding-top: 1em; padding-bottom: 1em;" id="copy">
+            <div class="h2" style="display:inline" id="lib_app_header">class BookLibrary(forms.ModelForm):<br>&emsp;&emsp;description = ("</div>
+            <p style="display:inline">This is a practical inventory app for managing books using Django's ModelForm. Instead of something overly simple like how many pieces of different 
+                fruit you have I wanted to do something more interesting. Feel free to add a book from your personal library and build a collective library! Books are arranged alphabetically 
+                by title, making them easy to scroll through. </p>
+            <p class="h2" style="display: inline" id="lib_app_header">")</p>
+            <ul class="list-group" style="display:inline; margin-left: 2em; line-height: 2em;">
+                <li style="margin-left: 4rem;">Check a book out by selecting it from the 'Library Inventory' and clicking the 'Check Out' button. This will move it to the 
+                    'Checked-out Books' select-box. </li>
+                <li style="margin-left: 4rem;">To return a book, you can select it in the 'Checked-out Books' and click the 'Return Book' button, moving it back to the Library 
+                    Inventory select-box.</li>
+                <li style="margin-left: 4rem;">Some entries have been created using Faker. See a title that sounds too weird or see an error in an entry? Select it from the 
+                    library to fill the forms automatically, update it, and click the 'Update Selected' button.</li>
+                <li style="margin-left: 4rem;">Feel like there's an entry that simply doesn't belong? Select it from the library and click 'Delete Selected' button to remove it. 
+                    Books can only be deleted if they're in the 'Library Inventory'.</li>
+                <li style="margin-left: 4rem;">Simply want to clear the fields and selections? Press the 'Clear' button.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container-xl" style="background-color: #FFFFFF;">
+        <div class="container-fluid" style="margin-top: 2.5em; margin-bottom: 2.5em; padding-top: 2em; padding-bottom: 2em;">
+            <input type="hidden" id="library_app_url" value="{% url 'library_app' %}">
+            <form method="POST">
+                {{ form.BookLibrary }}
+                {{ form.BooksToReturn }}
+                {% csrf_token %}
+                <input type="hidden" id="action" value="add" name="action">
+                <div class="form-row">
+                    <div class="col-12 col-lg-6 form-group">
+                        <label for="{{ form.title.id_for_label }}" class="col-sm-2">Title:</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="col-12 col-lg-6 form-group">
+                        <label for="{{ form.author.id_for_label }}" class="col-sm-2">Author:</label>
+                        {{ form.author }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-12 col-lg-6 form-group">
+                        <label for="{{ form.year.id_for_label }}" class="col-sm-2">Year:</label>
+                        {{ form.year }}
+                    </div>
+                    <div class="col-12 col-lg-6 form-group">
+                        <label for="{{ form.isbn.id_for_label }}" class="col-sm-2">ISBN:</label>
+                        {{ form.isbn }}
+                    </div>
+                    {{ form.on_hand }}
+                </div>
+                <div class="col form-row btn-group form-group" style="text-align: center;" role="group">
+                    <div class="col">
+                        <button type="submit" class="btn btn-secondary bg-dark" href="/refresh/" action="ADD">Add Book</button>
+                        <button type="button" id="check_out_btn" href="/refresh/" class="btn btn-secondary bg-dark break-button" disabled>Check Out</button>
+                        <button type="button" id="return_btn" href="/refresh/" class="btn btn-secondary bg-dark break-button" disabled>Return Book</button>
+                        <button type="button" id="update_btn" href="/refresh/" class="btn btn-secondary bg-dark break-button" disabled>Update Selected</button>
+                        <button type="button" id="delete_btn" href="/refresh/" class="btn btn-secondary bg-dark break-button" disabled>Delete Selected</button>
+                        <button type="reset" id="clear_btn" href="/refresh/" class="btn btn-secondary bg-dark break-button" onclick="clear_selected()">Clear</button>
+                    </div>
+                </div>
+                <div class="col-12 form-row" style="text-align: center; padding-bottom: 1em;">
+                    <h6>Library Inventory:</h6>
+                    <select class="form-control" size="5" style="margin: 0 auto; text-align: center;" id="id_library">
+                        {% for book in form.library %}
+                            <option data-id="{{ book.id }}" value="{{ book.title }}|{{ book.author }}|{{ book.year }}|{{ book.isbn }}">{{ book.title }};  {{ book.author }};  {{ book.year }};  {{ book.isbn }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <hr class="select_divider">
+                <div class="col-12 form-row" style="text-align: center; padding-top: 1em;">
+                    <h6>Checked-out Books:</h6>
+                    <select class="form-control" size="5" style="margin: 0 auto; text-align: center;" id="id_check_out">
+                        {% for book in form.checked_out %}
+                            <option data-id="{{ book.id }}" value="{{ book.title }}|{{ book.author }}|{{ book.year }}|{{ book.isbn }}|{{ book.on_hand }}">{{ book.title }};  {{ book.author }};  {{ book.year }};  {{ book.isbn }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+</html>
+
+{% endblock %}
